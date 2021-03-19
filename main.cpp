@@ -1,7 +1,8 @@
 #include <iostream>
 #include <vector>
-
+#include <unordered_map>
 #include <algorithm>
+#include <map>
 
 
 void testSightSeeing();
@@ -103,8 +104,8 @@ vector <vector <int>> getResult(vector <vector <int>> sums, int K)
 			int complete_res = sums[mini][minj];
 			if (i - K - 1 >= 0 && j - K - 1 >= 0)
 			{
-				int maxj = min(N-1, j+K);
-				int maxi = min(M-1, i+K);
+				int maxj = min(N - 1, j + K);
+				int maxi = min(M - 1, i + K);
 				complete_res += sums[i - K - 1][j - K - 1];
 				complete_res -= sums[i - K - 1][maxj];
 				complete_res -= sums[maxi][j - K - 1];
@@ -124,34 +125,35 @@ vector <vector <int>> getResult(vector <vector <int>> sums, int K)
 }
 
 
-
-
-
-
 using namespace std;
 
-int maxScoreSightseeingPair(std::vector<int>& values) {
+int maxScoreSightseeingPair(std::vector <int> &values)
+{
 	int largest = 0;
 	int largest_idx = 0;
 	int second_largest = 0;
-	int second_largest_idx= 0;
+	int second_largest_idx = 0;
 	int best_score = 0;
-	for (int i = 0; i < values.size(); ++i){
+	for (int i = 0; i < values.size(); ++i)
+	{
 
-		if (values[i] >= largest){
+		if (values[i] >= largest)
+		{
 			second_largest_idx = largest_idx;
 			second_largest = largest;
 			largest_idx = i;
 			largest = values[i];
 
 		}
-		else if (values[i] >= second_largest){
+		else if (values[i] >= second_largest)
+		{
 			second_largest = values[i];
 			second_largest_idx = i;
 		}
 		// int max = (largest_idx > second_largest_idx) ? largest_idx : second_largest_idx;
 		// int min = (largest_idx > second_largest_idx) ? second_largest_idx : largest_idx;
-		if (best_score < largest + second_largest){
+		if (best_score < largest + second_largest)
+		{
 			best_score = largest + second_largest;
 		}
 		--largest;
@@ -161,8 +163,8 @@ int maxScoreSightseeingPair(std::vector<int>& values) {
 }
 
 
-
-void numIslandsHelper(vector<vector<char>>& grid, int i, int j){
+void numIslandsHelper(vector <vector <char>> &grid, int i, int j)
+{
 	if (j < grid[0].size() && i < grid.size() && i >= 0 && j >= 0)
 	{
 		if (grid[i][j] == '0')
@@ -178,12 +180,16 @@ void numIslandsHelper(vector<vector<char>>& grid, int i, int j){
 }
 
 
-int numIslands(vector<vector<char>>& grid) {
+int numIslands(vector <vector <char>> &grid)
+{
 	int result = 0;
-	for (int i = 0; i < grid.size(); ++i){
-		for (int j = 0; j < grid[0].size(); ++j){
-			if (grid[i][j] != '0'){
-				numIslandsHelper(grid, i,j);
+	for (int i = 0; i < grid.size(); ++i)
+	{
+		for (int j = 0; j < grid[0].size(); ++j)
+		{
+			if (grid[i][j] != '0')
+			{
+				numIslandsHelper(grid, i, j);
 				++result;
 			}
 		}
@@ -192,6 +198,105 @@ int numIslands(vector<vector<char>>& grid) {
 }
 
 
+struct hash_pair
+{
+	template <class T1, class T2>
+		size_t operator()(const pair <T1, T2> &p) const
+		{
+			auto hash1 = hash <T1>{}(p.first);
+			auto hash2 = hash <T2>{}(p.second);
+			return hash1 ^ hash2;
+		}
+};
+
+int
+findTargetHelper(vector <int> &nums, int idx, const int &S, int &sum, map <pair <int, int>, int> &
+dp);
+
+int findTargetSumWays(vector <int> &nums, int S)
+{
+	int sum = 0;
+	map <pair <int, int>, int> dp;
+	return findTargetHelper(nums, 0, S, sum, dp);
+}
+
+
+int findTargetHelper(vector <int> &nums, int idx, const int &S, int &sum,
+					 map <pair <int, int>, int> &dp)
+{
+	if (idx == nums.size())
+	{
+		if (sum == S)
+		{
+			dp.insert({{sum, idx}, 1});
+			return 1;
+		}
+		else
+		{
+			dp.insert({{sum, idx}, 0});
+			return 0;
+		}
+	}
+	else
+	{
+		int result = 0;
+		auto dpres = dp.find({sum, idx});
+		if (dpres != dp.end())
+		{
+			return (*dpres).second;
+		}
+		else
+		{
+			sum += nums[idx];
+			result += findTargetHelper(nums, idx + 1, S, sum, dp);
+			sum -= nums[idx];
+			sum += -nums[idx];
+			result += findTargetHelper(nums, idx + 1, S, sum, dp);
+			sum -= -nums[idx];
+			dp.insert({{sum, idx}, result});
+		}
+		return result;
+	}
+
+}
+
+
+void numSquaresHelper(const int &n, vector <int> &v, int curSum, int curSize, int idx, int &best)
+{
+	if (curSum == n)
+	{
+		best = (best == -1) ? curSize : (best > curSize) ? curSize : best;
+	}
+	else if (curSum > n || idx >= v.size())
+	{
+		return;
+	}
+	else
+	{
+		for (int i = 0; v[idx] * i <= n; ++i)
+		{
+			numSquaresHelper(n, v, curSum + (v[idx] * i), curSize + i, idx + 1, best);
+		}
+	}
+}
+
+int numSquares(int n)
+{
+	int smallest_root = sqrt(n);
+	vector <int> v;
+	for (int i = smallest_root; i >= 1; --i)
+	{
+		v.push_back(i * i);
+		cout << i * i << endl;
+	}
+	cout << "________" << endl;
+	int curSum = 0;
+	int curSize = 0;
+	int best = -1;
+	numSquaresHelper(n, v, curSum, curSize, 0, best);
+	return best;
+
+}
 
 
 int main()
@@ -199,12 +304,19 @@ int main()
 	// testIntegralImage();
 	// testSightSeeing();
 	// testNumIslands();
+	// vector <int> v = {1,1,1,1,1};
+	// cout << findTargetSumWays(v, 3);
+	cout << numSquares(10000);
+
 }
 
 void testIntegralImage()
 {
-	vector <vector <int>> v = {{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, {7, 9, 8, 7, 6, 5, 4, 34, 32, 5}, {7, 9, 8, 7, 6, 5, 4, 34, 32,
-														   5},{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}};
+	vector <vector <int>> v = {{1, 2, 3, 4, 5, 6, 7, 8,  9,  10},
+							   {7, 9, 8, 7, 6, 5, 4, 34, 32, 5},
+							   {7, 9, 8, 7, 6, 5, 4, 34, 32,
+															 5},
+							   {1, 2, 3, 4, 5, 6, 7, 8,  9,  10}};
 	print_vector(v);
 	// auto res = inefficientVersion(v, 1);
 	auto sums = sumUp(v);
@@ -215,10 +327,10 @@ void testIntegralImage()
 
 void testNumIslands()
 {
-	vector<char> c1 = {'1', '1', '1'};
-	vector<char> c2 = {'0','1','0'};
-	vector<char> c3 = {'1','1','1'};
-	vector<vector<char>>c;
+	vector <char> c1 = {'1', '1', '1'};
+	vector <char> c2 = {'0', '1', '0'};
+	vector <char> c3 = {'1', '1', '1'};
+	vector <vector <char>> c;
 	c.push_back(c1);
 	c.push_back(c2);
 	c.push_back(c3);
