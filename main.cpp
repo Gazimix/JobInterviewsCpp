@@ -2,11 +2,13 @@
 #include <vector>
 #include <string>
 // #include <unordered_map>
-// #include <algorithm>
-// #include <map>
+#include <algorithm>
+#include <map>
 //
 //
 //
+void testKFrequentWords();
+
 using namespace std;
 //
 // vector <vector <int>> inefficientVersion(vector <vector <int>> &mat, int k)
@@ -40,18 +42,20 @@ using namespace std;
 // 	return sum;
 // }
 //
-// void print_vector(const vector <vector <int>> &res)
-// {
-// 	for (auto &a : res)
-// 	{
-// 		for (auto &b: a)
-// 		{
-// 			cout << b << " ";
-// 		}
-// 		cout << endl;
-// 	}
-// 	cout << endl;
-// }
+
+template <class T>
+	void print_vector(const vector <T> &res)
+	{
+		for (auto &a : res)
+		{
+			for (auto &b: a)
+			{
+				cout << b << " ";
+			}
+			cout << endl;
+		}
+		cout << endl;
+	}
 //
 // vector <vector <int>> sumUp(vector <vector <int>> &mat)
 // {
@@ -259,12 +263,12 @@ using namespace std;
 // 							   {7, 9, 8, 7, 6, 5, 4, 34, 32,
 // 															 5},
 // 							   {1, 2, 3, 4, 5, 6, 7, 8,  9,  10}};
-// 	print_vector(v);
+// 	print_vector<vector<int>>(v);
 // 	// auto res = inefficientVersion(v, 1);
 // 	auto sums = sumUp(v);
 // 	print_vector(sums);
 // 	v = getResult(sums, 2);
-// 	print_vector(v);
+// 	print_vector<vector<int>>(v);
 // }
 //
 // void testNumIslands()
@@ -432,28 +436,35 @@ int jump(vector <int> &arr)
 }
 
 
-bool canJump(vector<int>& arr){
+bool canJump(vector <int> &arr)
+{
 	if (arr.size() == 1)
+	{
 		return 0;
+	}
 	int jumps = 0;
-	for (int i = 0; i < arr.size(); ++i){
+	for (int i = 0; i < arr.size(); ++i)
+	{
 		int current_jump = arr[i];
 		int mx = 0;
 		int mx_idx = i;
 		int dist = 1;
-		for (int j = i + 1; j <= i + current_jump; ++j){
+		for (int j = i + 1; j <= i + current_jump; ++j)
+		{
 			if (j >= arr.size() - 1)
 			{
 				return true;
 			}
-			if (mx <= arr[j]){
+			if (mx <= arr[j])
+			{
 				mx = arr[j];
 				mx_idx = j;
 				++dist;
 			}
 			--mx;
 		}
-		if (i == mx_idx-1) return false;
+		if (i == mx_idx - 1)
+		{return false;}
 		++jumps;
 	}
 	return false;
@@ -477,10 +488,68 @@ void testJumpGames()
 // 	repeatedSubstringPattern();
 // 	test_min_falling_path();
 // 	testJumpGames();
+// testKFrequentWords();
+// }
+
+// vector<string> topKFrequent(vector<string>& nums, int k) {
+// 	map <string, int> mp;
+// 	for (int i = 0; i < nums.size(); ++i)
+// 	{
+// 		if (mp.find(nums[i]) == mp.end())
+// 		{
+// 			mp.insert({nums[i], 1});
+// 		}
+// 		else
+// 		{
+// 			++mp[nums[i]];
+// 		}
+// 	}
+// 	sort(nums.begin(), nums.end(), [&mp](const string& a, const string& b){return (mp[a] > mp[b])
+// 																				  ? true : (mp[a]
+// 																				  < mp[b]) ?
+// 																				  false : (a
+// 																				  .compare(b) >
+// 																				  0) ? true :
+// 																				  false;});
+// 	vector <string> res;
+// 	int f = 0;
+// 	for (int i = 0; f < k; ++f)
+// 	{
+// 		string s = nums[i];
+// 		res.push_back(nums[i]);
+// 		i += (mp[nums[i]]);
+// 	}
+// 	return res;
 // }
 
 int main()
 {
 	// doTests();
+
+}
+
+void testKFrequentWords()
+{
+	vector <string>
+			v = {"glarko", "zlfiwwb", "nsfspyox", "pwqvwmlgri", "qggx", "qrkgmliewc", "zskaqzwo",
+				 "zskaqzwo", "ijy",
+				 "htpvnmozay", "jqrlad", "ccjel", "qrkgmliewc", "qkjzgws", "fqizrrnmif", "jqrlad",
+				 "nbuorw",
+				 "qrkgmliewc", "htpvnmozay", "nftk", "glarko", "hdemkfr", "axyak", "hdemkfr",
+				 "nsfspyox", "nsfspyox",
+				 "qrkgmliewc", "nftk", "nftk", "ccjel", "qrkgmliewc", "ocgjsu", "ijy", "glarko",
+				 "nbuorw", "nsfspyox", "qkjzgws", "qkjzgws", "fqizrrnmif", "pwqvwmlgri", "nftk",
+				 "qrkgmliewc", "jqrlad", "nftk", "zskaqzwo", "glarko", "nsfspyox", "zlfiwwb",
+				 "hwlvqgkdbo", "htpvnmozay", "nsfspyox", "zskaqzwo", "htpvnmozay", "zskaqzwo",
+				 "nbuorw", "qkjzgws", "zlfiwwb", "pwqvwmlgri", "zskaqzwo", "qengse", "glarko",
+				 "qkjzgws", "pwqvwmlgri", "fqizrrnmif", "nbuorw", "nftk", "ijy", "hdemkfr", "nftk",
+				 "qkjzgws", "jqrlad", "nftk", "ccjel", "qggx", "ijy", "qengse", "nftk",
+				 "htpvnmozay", "qengse", "eonrg", "qengse", "fqizrrnmif", "hwlvqgkdbo", "qengse",
+				 "qengse", "qggx", "qkjzgws", "qggx", "pwqvwmlgri", "htpvnmozay", "qrkgmliewc",
+				 "qengse", "fqizrrnmif", "qkjzgws", "qengse", "nftk", "htpvnmozay", "qggx",
+				 "zlfiwwb", "bwp", "ocgjsu", "qrkgmliewc", "ccjel", "hdemkfr", "nsfspyox",
+				 "hdemkfr", "qggx", "zlfiwwb", "nsfspyox", "ijy", "qkjzgws", "fqizrrnmif",
+				 "qkjzgws", "qrkgmliewc", "glarko", "hdemkfr", "pwqvwmlgri"};
+	print_vector <string>(topKFrequent(v, 3));
 }
 //
