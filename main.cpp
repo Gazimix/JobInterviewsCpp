@@ -4,10 +4,15 @@
 // #include <unordered_map>
 #include <algorithm>
 #include <map>
+
 //
 //
 //
 void testKFrequentWords();
+
+void testRangeSum();
+
+void testLongestOnes();
 
 using namespace std;
 //
@@ -42,20 +47,28 @@ using namespace std;
 // 	return sum;
 // }
 //
-
 template <class T>
-	void print_vector(const vector <T> &res)
+void print_vector2d(const vector <T> &res)
+{
+	for (auto &a : res)
 	{
-		for (auto &a : res)
+		for (auto &b: a)
 		{
-			for (auto &b: a)
-			{
-				cout << b << " ";
-			}
-			cout << endl;
+			cout << b << " ";
 		}
 		cout << endl;
 	}
+	cout << endl;
+}
+template <class T>
+void print_vector1d(const vector <T> &res)
+{
+	for (auto &a : res)
+	{
+		cout << a << " ";
+	}
+	cout << endl;
+}
 //
 // vector <vector <int>> sumUp(vector <vector <int>> &mat)
 // {
@@ -263,12 +276,12 @@ template <class T>
 // 							   {7, 9, 8, 7, 6, 5, 4, 34, 32,
 // 															 5},
 // 							   {1, 2, 3, 4, 5, 6, 7, 8,  9,  10}};
-// 	print_vector<vector<int>>(v);
+// 	print_vector2d<vector<int>>(v);
 // 	// auto res = inefficientVersion(v, 1);
 // 	auto sums = sumUp(v);
-// 	print_vector(sums);
+// 	print_vector2d(sums);
 // 	v = getResult(sums, 2);
-// 	print_vector<vector<int>>(v);
+// 	print_vector2d<vector<int>>(v);
 // }
 //
 // void testNumIslands()
@@ -522,34 +535,260 @@ void testJumpGames()
 // 	return res;
 // }
 
+// void testKFrequentWords()
+// {
+// 	vector <string>
+// 			v = {"glarko", "zlfiwwb", "nsfspyox", "pwqvwmlgri", "qggx", "qrkgmliewc", "zskaqzwo",
+// 				 "zskaqzwo", "ijy",
+// 				 "htpvnmozay", "jqrlad", "ccjel", "qrkgmliewc", "qkjzgws", "fqizrrnmif", "jqrlad",
+// 				 "nbuorw",
+// 				 "qrkgmliewc", "htpvnmozay", "nftk", "glarko", "hdemkfr", "axyak", "hdemkfr",
+// 				 "nsfspyox", "nsfspyox",
+// 				 "qrkgmliewc", "nftk", "nftk", "ccjel", "qrkgmliewc", "ocgjsu", "ijy", "glarko",
+// 				 "nbuorw", "nsfspyox", "qkjzgws", "qkjzgws", "fqizrrnmif", "pwqvwmlgri", "nftk",
+// 				 "qrkgmliewc", "jqrlad", "nftk", "zskaqzwo", "glarko", "nsfspyox", "zlfiwwb",
+// 				 "hwlvqgkdbo", "htpvnmozay", "nsfspyox", "zskaqzwo", "htpvnmozay", "zskaqzwo",
+// 				 "nbuorw", "qkjzgws", "zlfiwwb", "pwqvwmlgri", "zskaqzwo", "qengse", "glarko",
+// 				 "qkjzgws", "pwqvwmlgri", "fqizrrnmif", "nbuorw", "nftk", "ijy", "hdemkfr", "nftk",
+// 				 "qkjzgws", "jqrlad", "nftk", "ccjel", "qggx", "ijy", "qengse", "nftk",
+// 				 "htpvnmozay", "qengse", "eonrg", "qengse", "fqizrrnmif", "hwlvqgkdbo", "qengse",
+// 				 "qengse", "qggx", "qkjzgws", "qggx", "pwqvwmlgri", "htpvnmozay", "qrkgmliewc",
+// 				 "qengse", "fqizrrnmif", "qkjzgws", "qengse", "nftk", "htpvnmozay", "qggx",
+// 				 "zlfiwwb", "bwp", "ocgjsu", "qrkgmliewc", "ccjel", "hdemkfr", "nsfspyox",
+// 				 "hdemkfr", "qggx", "zlfiwwb", "nsfspyox", "ijy", "qkjzgws", "fqizrrnmif",
+// 				 "qkjzgws", "qrkgmliewc", "glarko", "hdemkfr", "pwqvwmlgri"};
+// 	print_vector2d <string>(topKFrequent(v, 3));
+// }
+//
+
+vector <int> topKFrequent(vector <int> &nums, int k)
+{
+	map <int, int> mp;
+	for (int i = 0; i < nums.size(); ++i)
+	{
+		if (mp.find(nums[i]) == mp.end())
+		{
+			mp.insert({nums[i], 1});
+		}
+		else
+		{
+			++mp[nums[i]];
+		}
+	}
+	vector <int> res;
+	sort(nums.begin(), nums.end(), [&mp](int a, int b)
+	{
+		return (mp[a] == mp[b] && a > b) ? true :
+			   (mp[a] == mp[b] && a < b) ? false : (mp[a] > mp[b]) ? true : false;
+	});
+	int f = 0;
+	for (int i = 0; f < k; ++f)
+	{
+		res.push_back(nums[i]);
+		i += mp[nums[i]];
+	}
+	return res;
+}
+
+
+int minFallingPathSumHelper(vector <vector <int>> &matrix, int i, int j, map <pair <int, int>,
+		int>& mp)
+{
+	int jp1 = 10000, jp0 = 10000, jpm1 = 10000;
+	if (i == matrix.size() - 1 && j < matrix[0].size() && j >= 0)
+	{return matrix[i][j];}
+	if (mp.find({i, j}) == mp.end())
+	{
+		if (i + 1 < matrix.size() && j + 1 < matrix[0].size())
+		{
+			jp1 = minFallingPathSumHelper(matrix, i + 1, j + 1, mp);
+		}
+		if (i + 1 < matrix.size() && j < matrix[0].size())
+		{
+			jp0 = minFallingPathSumHelper(matrix, i + 1, j, mp);
+		}
+		if (i + 1 < matrix.size() && j - 1 >= 0)
+		{
+			jpm1 = minFallingPathSumHelper(matrix, i + 1, j - 1, mp);
+		}
+		int m1 = (jp0 < jp1) ? jp0 : jp1;
+		int m2 = (jpm1 < jp0) ? jpm1 : jp0;
+		int minimum = (m1 < m2) ? m1 : m2;
+		int minimal_val = minimum + matrix[i][j];
+		mp[{i, j}] = minimal_val;
+		return minimal_val;
+	}
+	else
+	{
+		return mp[{i, j}];
+	}
+}
+
+int minFallingPathSumII(vector <vector <int>> &matrix)
+{
+	map <pair <int, int>, int> mp;
+	int minim = INT_MAX;
+	for (int i = 0; i < matrix[0].size(); ++i)
+	{
+		minim = min(minim, minFallingPathSumHelper(matrix, 0, i, mp));
+	}
+	return minim;
+}
+
+void combSum3Helper(int k, int n, vector<int>& curPath, vector<vector<int>>& allPaths, vector<int>&
+nums, int
+					idx){
+	if (n < 0 || (n == 0 && k != 0)) return;
+	else if (n == 0 && k == 0){
+		vector<int> newVec(curPath);
+		allPaths.push_back(newVec);
+		return;
+	}
+	else if (idx == nums.size()) return;
+	else{
+		combSum3Helper(k, n, curPath, allPaths, nums, idx+1);
+		curPath.push_back(nums[idx]);
+		combSum3Helper(k-1, n-nums[idx], curPath, allPaths, nums, idx+1);
+		curPath.pop_back();
+	}
+}
+
+vector<vector<int>> combinationSum3(int k, int n) {
+	vector<vector<int>> allPaths;
+	vector<int> curPath;
+	vector<int> nums;
+	for (int i = 1; i <= 9; ++i) nums.push_back(i);
+	for(auto& a : nums) cout << a;
+	combSum3Helper(k, n, curPath, allPaths, nums, 0);
+	return allPaths;
+}
+
+
+void createSums(vector<int>&nums, int idx, int curSum, vector<int>& allPaths){
+	if (idx == nums.size()){
+		if (curSum == 0){
+			return;
+		}
+		allPaths.push_back(curSum);
+	}
+	else{
+		createSums(nums, idx+1, curSum, allPaths);
+		for (int i = idx; i < nums.size(); ++i){
+			curSum += nums[i];
+			allPaths.push_back(curSum);
+		}
+	}
+}
+
+int rangeSum(vector<int>& nums, int n, int left, int right) {
+	int curSum = 0;
+	vector<int> allPaths;
+	createSums(nums, 0, curSum, allPaths);
+	sort(allPaths.begin(), allPaths.end());
+	for (int i = left-1; i < right; ++i)
+	{
+		curSum += allPaths[i];
+	}
+	return curSum;
+}
+
+
+int longestOnes(vector<int>& A, int K) {
+	int zeros = K;
+	int max = 0;
+	for (int i = 0; i < A.size(); ++i){
+		int j = i;
+		int tmp_max = 0;
+		zeros = K;
+		while (j < A.size() && zeros >= 0){
+			if (A[j] == 0){
+				--zeros;
+				if(zeros < 0) break;
+			}
+			++tmp_max;
+			++j;
+		}
+		max = (max > tmp_max) ? max : tmp_max;
+	}
+	return max;
+}
+
+
+int bestSubArraySum(vector<int> nums){
+	int cur_sum = nums[0];
+	vector<int> dp;
+	dp.push_back(nums[0]);
+	for (int i = 0; i < nums.size(); ++i){
+		if (nums[i] > 0 && cur_sum < 0){
+			cur_sum = nums[i];
+			dp.push_back(cur_sum);
+		}
+		// else if (nums[i] < 0 && cur_sum + nums[i] > 0 && nums[i-1] < nums[i]){
+		// 	cur_sum += nums[i];
+		// 	dp.push_back(cur_sum);
+		// }
+		else{
+			dp.push_back(dp[dp.size() - 1] + nums[i]);
+		}
+	}
+	int mx = INT_MIN;
+	for (auto& e : dp){
+		mx = (mx > e) ? mx : e;
+	}
+	return mx;
+}
+
+
+int bestIncreasingSubArray(vector<int> nums){
+	int cur_sum = nums[0];
+	vector<int> dp;
+	dp.push_back(nums[0]);
+	for (int i = 1; i < nums.size(); ++i){
+		if (nums[i-1] > nums[i]){
+			cur_sum = nums[i];
+			dp.push_back(cur_sum);
+		}
+		else{
+			dp.push_back(dp[dp.size() - 1] + nums[i]);
+		}
+	}
+	int mx = INT_MIN;
+	for (auto& e : dp){
+		mx = (mx > e) ? mx : e;
+	}
+	return mx;
+}
+
+int bestDivArray(vector<int> nums){
+	return 0;
+}
+
+
 int main()
 {
+
+	// int arr[2][2] = {{1,2},{3,4}};
 	// doTests();
+	// combinationSum3(3, 7);
+	// testRangeSum();
+	// testLongestOnes();
+	// cout << bestSubArraySum({-2, -3, 4, -1, -2, 1, 5, -3}) << endl;
+	cout << bestIncreasingSubArray({2,1,4,7,14,3,4,6,14});
 
 }
 
-void testKFrequentWords()
+void testLongestOnes()
 {
-	vector <string>
-			v = {"glarko", "zlfiwwb", "nsfspyox", "pwqvwmlgri", "qggx", "qrkgmliewc", "zskaqzwo",
-				 "zskaqzwo", "ijy",
-				 "htpvnmozay", "jqrlad", "ccjel", "qrkgmliewc", "qkjzgws", "fqizrrnmif", "jqrlad",
-				 "nbuorw",
-				 "qrkgmliewc", "htpvnmozay", "nftk", "glarko", "hdemkfr", "axyak", "hdemkfr",
-				 "nsfspyox", "nsfspyox",
-				 "qrkgmliewc", "nftk", "nftk", "ccjel", "qrkgmliewc", "ocgjsu", "ijy", "glarko",
-				 "nbuorw", "nsfspyox", "qkjzgws", "qkjzgws", "fqizrrnmif", "pwqvwmlgri", "nftk",
-				 "qrkgmliewc", "jqrlad", "nftk", "zskaqzwo", "glarko", "nsfspyox", "zlfiwwb",
-				 "hwlvqgkdbo", "htpvnmozay", "nsfspyox", "zskaqzwo", "htpvnmozay", "zskaqzwo",
-				 "nbuorw", "qkjzgws", "zlfiwwb", "pwqvwmlgri", "zskaqzwo", "qengse", "glarko",
-				 "qkjzgws", "pwqvwmlgri", "fqizrrnmif", "nbuorw", "nftk", "ijy", "hdemkfr", "nftk",
-				 "qkjzgws", "jqrlad", "nftk", "ccjel", "qggx", "ijy", "qengse", "nftk",
-				 "htpvnmozay", "qengse", "eonrg", "qengse", "fqizrrnmif", "hwlvqgkdbo", "qengse",
-				 "qengse", "qggx", "qkjzgws", "qggx", "pwqvwmlgri", "htpvnmozay", "qrkgmliewc",
-				 "qengse", "fqizrrnmif", "qkjzgws", "qengse", "nftk", "htpvnmozay", "qggx",
-				 "zlfiwwb", "bwp", "ocgjsu", "qrkgmliewc", "ccjel", "hdemkfr", "nsfspyox",
-				 "hdemkfr", "qggx", "zlfiwwb", "nsfspyox", "ijy", "qkjzgws", "fqizrrnmif",
-				 "qkjzgws", "qrkgmliewc", "glarko", "hdemkfr", "pwqvwmlgri"};
-	print_vector <string>(topKFrequent(v, 3));
+	vector<int> v = {0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 1, 1, 1, 1};
+	cout << longestOnes(v, 3);
 }
-//
+
+void testRangeSum()
+{
+	vector<int> v = {1, 2, 3, 4};
+	// auto res = rangeSum(v, v.size(), 1, 5);
+	auto res = rangeSum(v, v.size(), 1, 10);
+	cout << res;
+}
+
+
